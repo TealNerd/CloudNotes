@@ -1,20 +1,15 @@
 package com.biggestnerd.cloudnotes;
 
-//TODO: Everything
-
-import javax.swing.*;
-import java.awt.event.*;
-import java.util.Random;
-
-public class CloudNotesBackEnd extends JFrame
+public class CloudNotesBackEnd
 {
-	public void sync()
+	public void sync(String input)
 	{
-		System.out.println("Syncing");
+		System.out.println("Syncing: " + input);
 	}
 	
-	public void load()
+	public String load()
 	{
 		System.out.println("Loading");
+		return "Test text";
 	}
 }
