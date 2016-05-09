@@ -23,6 +23,7 @@ public class CloudNotesGUI extends JFrame
     private JButton syncButton;
     private JButton loadButton;
     private JButton fileSelectButton;
+    private JButton saveLocationButton;
     
     private CloudNotesBackEnd backEnd;
     
@@ -33,8 +34,8 @@ public class CloudNotesGUI extends JFrame
     	super("Cloud Notes");
     	log = Logger.getLogger("Cloud Notes");
     	backEnd = new CloudNotesBackEnd(log);
-    	    	
-        setSize(350, 390);
+        	
+        setSize(420, 450);
         
         addWindowListener(new WindowAdapter() 
         {
@@ -54,8 +55,11 @@ public class CloudNotesGUI extends JFrame
         loadButton.addActionListener(new LoadListener());
         
         fileSelectButton = new JButton("Select File");
-        fileSelectButton.addActionListener(new fileSelectListener());
+        fileSelectButton.addActionListener(new FileSelectListener());
 
+        saveLocationButton = new JButton("Save Location");
+        saveLocationButton.addActionListener(new SaveLocationListener());
+        
         notepad = new JTextArea(20, 30);
         notepad.setLineWrap(true);
         notepad.setWrapStyleWord(true);
@@ -64,14 +68,16 @@ public class CloudNotesGUI extends JFrame
         subPanel.add(syncButton);
         subPanel.add(loadButton);
         subPanel.add(fileSelectButton);
+        subPanel.add(saveLocationButton);
         
         panel.add(subPanel, BorderLayout.NORTH);
         panel.add(notepad, BorderLayout.CENTER);
         
         add(panel);
-        setVisible(true);        
+        setVisible(true);    
         
-        log.info(":" + notepad.getText() + ":" );
+        if (backEnd.loadSettings())
+        	load();
     }
     
     public void sync()
@@ -99,7 +105,7 @@ public class CloudNotesGUI extends JFrame
        System.exit(0);
     }
 
-    private class fileSelectListener implements ActionListener  
+    private class FileSelectListener implements ActionListener  
     { 
     	public void actionPerformed(ActionEvent e)  
     	{
@@ -125,12 +131,20 @@ public class CloudNotesGUI extends JFrame
     		}
     	}
     }
-    
+
     private class SyncListener implements ActionListener 
     {
     	public void actionPerformed(ActionEvent e)  
     	{
     		sync();
+    	} 
+    }
+    
+    private class SaveLocationListener implements ActionListener 
+    {
+    	public void actionPerformed(ActionEvent e)  
+    	{
+    		backEnd.saveSettings();
     	} 
     }
     
