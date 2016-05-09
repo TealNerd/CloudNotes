@@ -2,15 +2,20 @@ package com.biggestnerd.cloudnotes;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.FileDialog;
 import java.awt.event.*;
 import java.io.File;
+import java.io.FilenameFilter;
 
 public class CloudNotesGUI extends JFrame
 {
+	static CloudNotesGUI frame;
+	
 	private JPanel panel;
     private JTextArea notepad;
     private JButton syncButton;
     private JButton loadButton;
+    private JButton fileSelectButton;
     
     CloudNotesBackEnd backEnd;
     
@@ -18,9 +23,7 @@ public class CloudNotesGUI extends JFrame
     {
     	super("Cloud Notes");
     	backEnd = new CloudNotesBackEnd();
-    	
-        backEnd.setFileName((new File(new File(System.getProperty("user.home"), "/Desktop"), "test.txt")).toString());
-    	
+    	    	
         if (System.getProperty("os.name").startsWith("Mac OS"))
         	setSize(350, 390);
         else 
@@ -37,12 +40,17 @@ public class CloudNotesGUI extends JFrame
         loadButton = new JButton("Load");
         loadButton.addActionListener(new loadListener());
         
+        fileSelectButton = new JButton("Select FIle");
+        fileSelectButton.addActionListener(new fileSelectListener());
+
+        
         notepad = new JTextArea(20, 30);
         notepad.setEditable(true);
 
         JPanel subPanel = new JPanel();
         subPanel.add(syncButton);
         subPanel.add(loadButton);
+        subPanel.add(fileSelectButton);
         
         panel.add(subPanel, BorderLayout.NORTH);
         panel.add(notepad, BorderLayout.CENTER);
@@ -70,6 +78,23 @@ public class CloudNotesGUI extends JFrame
        System.exit(0);
     }
 
+    private class fileSelectListener implements ActionListener  
+    { 
+    	public void actionPerformed(ActionEvent e)  
+    	{
+    		FileDialog fd = new FileDialog(frame, "Choose a TXT File to Load", FileDialog.LOAD);
+    		fd.setDirectory("C:\\"); 		
+    		fd.setFile("*.txt");
+    		fd.setVisible(true);
+
+    		if (fd.getFiles().length > 0)
+    		{
+        		backEnd.setFile(fd.getFiles()[0]);
+        		try { load();} catch (Exception e1) { e1.printStackTrace(); }
+    		}
+    	}
+    }
+    
     private class syncListener implements ActionListener  { public void actionPerformed(ActionEvent e)  { try {
 		sync();
 	} catch (Exception e1) {
@@ -82,6 +107,6 @@ public class CloudNotesGUI extends JFrame
 		e1.printStackTrace();
 	} } }
     
-    public static void main(String[] args) { new CloudNotesGUI(); }
+    public static void main(String[] args) { frame = new CloudNotesGUI(); }
 
 }

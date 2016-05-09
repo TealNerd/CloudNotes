@@ -8,13 +8,13 @@ import java.util.Scanner;
 
 public class CloudNotesBackEnd
 {
-	public String filename;
+	public File notepadFile = new File(new File(System.getProperty("user.home"), "/Desktop"), "test.txt");
 	
 	public void sync(String input) throws IOException
 	{
 		System.out.println("Syncing: " + input);	
 		
-	    PrintWriter pWriter = new PrintWriter (new FileWriter (new File (filename)));
+	    PrintWriter pWriter = new PrintWriter (new FileWriter (notepadFile));
 	    pWriter.println(input);
 	    pWriter.close();
 	}
@@ -25,7 +25,7 @@ public class CloudNotesBackEnd
 
 		String input = "";
 				
-	    Scanner sc = new Scanner (new File (filename));
+	    Scanner sc = new Scanner (notepadFile);
 	    while (sc.hasNextLine())
 	    	input += sc.nextLine() + "\n";
 	    sc.close();
@@ -33,8 +33,9 @@ public class CloudNotesBackEnd
 		return input;
 	}
 	
-	public void setFileName(String newFileName)
+	public void setFile(File newFile)
 	{
-		filename = newFileName;
+		notepadFile = newFile;
+		System.out.println("New File: " + notepadFile.toString());
 	}
 }
