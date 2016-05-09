@@ -9,6 +9,7 @@ import java.util.Scanner;
 public class CloudNotesBackEnd
 {
 	public File notepadFile = new File(new File(System.getProperty("user.home"), "/Desktop"), "test.txt");
+	private String previousInput ="";
 	
 	public void sync(String input) throws IOException
 	{
@@ -30,6 +31,7 @@ public class CloudNotesBackEnd
 	    	input += sc.nextLine() + "\n";
 	    sc.close();
 		
+	    previousInput = input;
 		return input;
 	}
 	
@@ -37,5 +39,10 @@ public class CloudNotesBackEnd
 	{
 		notepadFile = newFile;
 		System.out.println("New File: " + notepadFile.toString());
+	}
+	
+	public String getPreviousInput()
+	{
+		return previousInput;
 	}
 }

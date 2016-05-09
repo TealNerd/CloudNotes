@@ -71,10 +71,9 @@ public class CloudNotesGUI extends JFrame
     
     private void onExit() throws Exception
     {
-    	//Check if test has been edited before asking to sync again?
     	System.out.println("Closing");
     	
-    	if (true)
+    	if (!backEnd.getPreviousInput().equals(notepad.getText()))
     	{
     		if (JOptionPane.showConfirmDialog(null, "Sync Before Exiting?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
     			sync();
