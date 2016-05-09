@@ -82,18 +82,27 @@ public class CloudNotesGUI extends JFrame
     
     public void sync()
     {
-    	backEnd.sync(notepad.getText());
+    	if (backEnd.getFileName() != null)
+    		backEnd.sync(notepad.getText());
+    	else
+            JOptionPane.showMessageDialog(frame, "No text file selected");
     }
     
     public void load()
     {
-    	if (notepad.getText().length() == 0)
-    		notepad.setText(backEnd.load());
-    	else
+    	log.info("File name: " + backEnd.getFileName());
+    	if (backEnd.getFileName() != null)
     	{
-    		if (JOptionPane.showConfirmDialog(null, "Overwrite Existing Text?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
-    			notepad.setText(backEnd.load());
+	    	if (notepad.getText().length() == 0)
+	    		notepad.setText(backEnd.load());
+	    	else if (!backEnd.getPreviousInput().equals(notepad.getText()))
+	    	{
+	    		if (JOptionPane.showConfirmDialog(null, "Overwrite Existing Text?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+	    			notepad.setText(backEnd.load());
+	    	}
     	}
+    	else
+            JOptionPane.showMessageDialog(frame, "No text file selected");
     }
     
     private void onExit() 

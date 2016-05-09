@@ -2,13 +2,11 @@ package com.biggestnerd.cloudnotes;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.logging.*;
 
 public class CloudNotesBackEnd
 {
@@ -24,24 +22,24 @@ public class CloudNotesBackEnd
 	public boolean loadSettings()
 	{
     	log.log(Level.INFO, "Loading settings...");
-			File yourFile = new File(System.getProperty("user.home") + "/.cloudnotes", "CloudNotes.properties"); 
-	
-			if(yourFile.exists()) 
+		File settingsFile = new File(System.getProperty("user.home") + "/.cloudnotes", "CloudNotes.properties"); 
+
+		if(settingsFile.exists()) 
+		{
+			log.info("File exists");
+			FileInputStream in;
+			try {
+				in = new FileInputStream(settingsFile);
+				Properties mySettings = new Properties();
+				mySettings.load(in);
+				notepadFile = new File(mySettings.getProperty("NotesPath"));
+			} catch (Exception ex) 
 			{
-				log.info("File exists");
-				FileInputStream in;
-				try {
-					in = new FileInputStream(yourFile);
-					Properties mySettings = new Properties();
-					mySettings.load(in);
-					notepadFile = new File(mySettings.getProperty("NotesPath"));
-				} catch (Exception ex) 
-				{
-			    	log.log(Level.INFO, "Failed to load", ex);
-				}
-		    	
-		    	return true;
+		    	log.log(Level.INFO, "Failed to load", ex);
 			}
+	    	
+	    	return true;
+		}
 	
 		return false;
 	}
@@ -49,31 +47,28 @@ public class CloudNotesBackEnd
 	public void saveSettings()
 	{
 		log.info("Saving settings");	
-		File yourFile = new File(System.getProperty("user.home") + "/.cloudnotes", "CloudNotes.properties");
-
-		if(!yourFile.exists()) 
-		{
-			try 
-			{
-				if (!yourFile.getParentFile().exists())
-					yourFile.getParentFile().mkdirs();			
-				if (!yourFile.exists())
-					yourFile.createNewFile();					
-			}	
-		    catch (Exception ex) 
-		    {
-		    	log.log(Level.SEVERE, "Failed to create new file", ex);
-		    } 
-		}
 		
+		if (notepadFile == null)
+			return;
+		
+		File settingsFile = new File(System.getProperty("user.home") + "/.cloudnotes", "CloudNotes.properties");
+
 		try
 		{
-			FileOutputStream oFile = new FileOutputStream(yourFile, false); 
+			if(!settingsFile.exists()) 
+			{
+				if (!settingsFile.getParentFile().exists())
+					settingsFile.getParentFile().mkdirs();			
+				if (!settingsFile.exists())
+					settingsFile.createNewFile();					
+			}
+			
+	    	PrintWriter pWriter = new PrintWriter (settingsFile);
 			Properties mySettings = new Properties();
 			mySettings.setProperty("NotesPath", notepadFile.toString());
-			mySettings.store(oFile, null);
-			oFile.close();
-		}	
+			mySettings.store(pWriter, null);
+			pWriter.close();
+		}
 	    catch (Exception ex) 
 	    {
 	    	log.log(Level.SEVERE, "Failed to save", ex);
@@ -128,5 +123,13 @@ public class CloudNotesBackEnd
 	public String getPreviousInput()
 	{
 		return previousInput;
+	}
+	
+	public String getFileName()
+	{
+		if (notepadFile != null)
+			return notepadFile.toString();
+		else
+			return null;
 	}
 }
