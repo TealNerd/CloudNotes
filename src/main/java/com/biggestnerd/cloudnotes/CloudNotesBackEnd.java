@@ -2,43 +2,64 @@ package com.biggestnerd.cloudnotes;
 
 import java.io.File;
 import java.io.FileWriter;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CloudNotesBackEnd
 {
-	public File notepadFile = new File(new File(System.getProperty("user.home"), "/Desktop"), "test.txt");
+	public File notepadFile = new File(System.getProperty("user.home") + "/Desktop", "test.txt");
 	private String previousInput ="";
+	private Logger log;
 	
-	public void sync(String input) throws IOException
+	public CloudNotesBackEnd(Logger log) 
 	{
-		System.out.println("Syncing: " + input);	
-		
-	    PrintWriter pWriter = new PrintWriter (new FileWriter (notepadFile));
-	    pWriter.println(input);
-	    pWriter.close();
+		this.log = log;
 	}
 	
-	public String load()throws Exception 
+	public void sync(String input)
 	{
-		System.out.println("Loading");
+		log.info("Syncing: " + input);	
+		
+	    try 
+	    {
+	    	PrintWriter pWriter = new PrintWriter (new FileWriter (notepadFile));
+		    pWriter.println(input);
+		    pWriter.close();
+	    }
+	    catch (Exception ex) 
+	    {
+	    	log.log(Level.SEVERE, "Failed to sync!", ex);
+	    }
+	}
+	
+	public String load()
+	{
+		log.info("Loading");
 
 		String input = "";
 				
-	    Scanner sc = new Scanner (notepadFile);
-	    while (sc.hasNextLine())
-	    	input += sc.nextLine() + "\n";
-	    sc.close();
-		
-	    previousInput = input;
+	    try 
+	    {
+	    	Scanner sc = new Scanner (notepadFile);
+		    while (sc.hasNextLine())
+		    	input += sc.nextLine() + "\n";
+		    sc.close();
+			
+		    previousInput = input;
+	    }
+	    catch (Exception ex)
+	    {
+	    	log.log(Level.SEVERE, "Failed to load!", ex);
+	    }
 		return input;
 	}
 	
 	public void setFile(File newFile)
 	{
 		notepadFile = newFile;
-		System.out.println("New File: " + notepadFile.toString());
+		log.info("New File: " + notepadFile.toString());
 	}
 	
 	public String getPreviousInput()

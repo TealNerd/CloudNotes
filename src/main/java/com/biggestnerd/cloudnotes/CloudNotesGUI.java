@@ -1,9 +1,18 @@
 package com.biggestnerd.cloudnotes;
 
-import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.FileDialog;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.logging.Logger;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextArea;
 
 public class CloudNotesGUI extends JFrame
 {
@@ -15,30 +24,36 @@ public class CloudNotesGUI extends JFrame
     private JButton loadButton;
     private JButton fileSelectButton;
     
-    CloudNotesBackEnd backEnd;
+    private CloudNotesBackEnd backEnd;
+    
+    private Logger log;
     
     public CloudNotesGUI()
     {
     	super("Cloud Notes");
-    	backEnd = new CloudNotesBackEnd();
+    	log = Logger.getLogger("Cloud Notes");
+    	backEnd = new CloudNotesBackEnd(log);
     	    	
-        if (System.getProperty("os.name").startsWith("Mac OS"))
-        	setSize(350, 390);
-        else 
-        	setSize(350, 390);
+        setSize(350, 390);
         
-        addWindowListener(new WindowAdapter() { public void windowClosing(WindowEvent e) { try { onExit(); } catch (Exception e1) { e1.printStackTrace(); } }});
+        addWindowListener(new WindowAdapter() 
+        {
+        	public void windowClosing(WindowEvent e) 
+        	{
+        		onExit(); 
+        	}
+        });
                 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
         
         syncButton = new JButton("Sync");
-        syncButton.addActionListener(new syncListener());
+        syncButton.addActionListener(new SyncListener());
         
         loadButton = new JButton("Load");
-        loadButton.addActionListener(new loadListener());
+        loadButton.addActionListener(new LoadListener());
         
-        fileSelectButton = new JButton("Select FIle");
+        fileSelectButton = new JButton("Select File");
         fileSelectButton.addActionListener(new fileSelectListener());
 
         notepad = new JTextArea(20, 30);
@@ -56,15 +71,15 @@ public class CloudNotesGUI extends JFrame
         add(panel);
         setVisible(true);        
         
-        System.out.println(":" + notepad.getText() + ":" );
+        log.info(":" + notepad.getText() + ":" );
     }
     
-    public void sync() throws Exception
+    public void sync()
     {
     	backEnd.sync(notepad.getText());
     }
     
-    public void load() throws Exception
+    public void load()
     {
     	if (notepad.getText().length() == 0)
     		notepad.setText(backEnd.load());
@@ -75,9 +90,9 @@ public class CloudNotesGUI extends JFrame
     	}
     }
     
-    private void onExit() throws Exception
+    private void onExit() 
     {
-    	System.out.println("Closing");
+    	log.info("Closing");
     	
     	if (!backEnd.getPreviousInput().equals(notepad.getText()) && JOptionPane.showConfirmDialog(null, "Sync Before Exiting?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
     		sync();
@@ -101,25 +116,31 @@ public class CloudNotesGUI extends JFrame
     			{
     				validInput = true;
     				backEnd.setFile(fd.getFiles()[0]);
-	        		try { load();} catch (Exception e1) { e1.printStackTrace(); }
+	        		load();
     			}
     			else
+    			{
     				fd.setVisible(true);
+    			}
     		}
     	}
     }
     
-    private class syncListener implements ActionListener  { public void actionPerformed(ActionEvent e)  { try {
-		sync();
-	} catch (Exception e1) {
-		e1.printStackTrace();
-	} } }
+    private class SyncListener implements ActionListener 
+    {
+    	public void actionPerformed(ActionEvent e)  
+    	{
+    		sync();
+    	} 
+    }
     
-    private class loadListener implements ActionListener  {  public void actionPerformed(ActionEvent e) { try {
-		load();
-	} catch (Exception e1) {
-		e1.printStackTrace();
-	} } }
+    private class LoadListener implements ActionListener  
+    { 
+    	public void actionPerformed(ActionEvent event) 
+    	{
+    		load();
+    	}
+    }
     
     public static void main(String[] args) { frame = new CloudNotesGUI(); }
 
