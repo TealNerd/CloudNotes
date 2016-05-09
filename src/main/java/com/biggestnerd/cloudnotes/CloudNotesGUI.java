@@ -4,8 +4,6 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.FileDialog;
 import java.awt.event.*;
-import java.io.File;
-import java.io.FilenameFilter;
 
 public class CloudNotesGUI extends JFrame
 {
@@ -43,9 +41,9 @@ public class CloudNotesGUI extends JFrame
         fileSelectButton = new JButton("Select FIle");
         fileSelectButton.addActionListener(new fileSelectListener());
 
-        
         notepad = new JTextArea(20, 30);
-        notepad.setEditable(true);
+        notepad.setLineWrap(true);
+        notepad.setWrapStyleWord(true);
 
         JPanel subPanel = new JPanel();
         subPanel.add(syncButton);
@@ -57,6 +55,8 @@ public class CloudNotesGUI extends JFrame
         
         add(panel);
         setVisible(true);        
+        
+        System.out.println(":" + notepad.getText() + ":" );
     }
     
     public void sync() throws Exception
@@ -66,18 +66,21 @@ public class CloudNotesGUI extends JFrame
     
     public void load() throws Exception
     {
-    	notepad.setText(backEnd.load());
+    	if (notepad.getText().length() == 0)
+    		notepad.setText(backEnd.load());
+    	else
+    	{
+    		if (JOptionPane.showConfirmDialog(null, "Overwrite Existing Text?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+    			notepad.setText(backEnd.load());
+    	}
     }
     
     private void onExit() throws Exception
     {
     	System.out.println("Closing");
     	
-    	if (!backEnd.getPreviousInput().equals(notepad.getText()))
-    	{
-    		if (JOptionPane.showConfirmDialog(null, "Sync Before Exiting?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
-    			sync();
-    	}
+    	if (!backEnd.getPreviousInput().equals(notepad.getText()) && JOptionPane.showConfirmDialog(null, "Sync Before Exiting?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+    		sync();
        System.exit(0);
     }
 
