@@ -73,8 +73,12 @@ public class CloudNotesGUI extends JFrame
     {
     	//Check if test has been edited before asking to sync again?
     	System.out.println("Closing");
-        if (JOptionPane.showConfirmDialog(null, "Sync Before Exiting?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
-        	sync();
+    	
+    	if (true)
+    	{
+    		if (JOptionPane.showConfirmDialog(null, "Sync Before Exiting?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) 
+    			sync();
+    	}
        System.exit(0);
     }
 
@@ -87,10 +91,18 @@ public class CloudNotesGUI extends JFrame
     		fd.setFile("*.txt");
     		fd.setVisible(true);
 
-    		if (fd.getFiles().length > 0)
+    		boolean validInput = false;
+    		
+    		while(!validInput && fd.getFiles().length > 0)
     		{
-        		backEnd.setFile(fd.getFiles()[0]);
-        		try { load();} catch (Exception e1) { e1.printStackTrace(); }
+	    		if (fd.getFile().contains(".txt"))
+    			{
+    				validInput = true;
+    				backEnd.setFile(fd.getFiles()[0]);
+	        		try { load();} catch (Exception e1) { e1.printStackTrace(); }
+    			}
+    			else
+    				fd.setVisible(true);
     		}
     	}
     }
