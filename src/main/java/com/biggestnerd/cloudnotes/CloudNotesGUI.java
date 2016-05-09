@@ -26,7 +26,6 @@ public class CloudNotesGUI extends JFrame
     private JButton saveLocationButton;
     
     private CloudNotesBackEnd backEnd;
-    
     private Logger log;
     
     public CloudNotesGUI()
@@ -109,7 +108,7 @@ public class CloudNotesGUI extends JFrame
     {
     	log.info("Closing");
     	
-    	if (!backEnd.getPreviousInput().equals(notepad.getText()) && JOptionPane.showConfirmDialog(null, "Sync Before Exiting?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
+    	if (JOptionPane.showConfirmDialog(null, "Sync Before Exiting?", "Exit?", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)
     		sync();
        System.exit(0);
     }

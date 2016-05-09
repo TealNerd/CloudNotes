@@ -3,6 +3,7 @@ package com.biggestnerd.cloudnotes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Properties;
 import java.util.Scanner;
@@ -16,6 +17,13 @@ public class CloudNotesBackEnd
 	
 	public CloudNotesBackEnd(Logger log) 
 	{
+		notepadFile = new File(System.getProperty("user.dir"), "default.text");
+		if(!notepadFile.exists()) {
+			try 
+			{
+				notepadFile.createNewFile();
+			} catch (IOException e) {}
+		}
 		this.log = log;
 	}
 	
@@ -33,6 +41,10 @@ public class CloudNotesBackEnd
 				Properties mySettings = new Properties();
 				mySettings.load(in);
 				notepadFile = new File(mySettings.getProperty("NotesPath"));
+				if(!notepadFile.exists())
+				{
+					return false;
+				}
 			} catch (Exception ex) 
 			{
 		    	log.log(Level.INFO, "Failed to load", ex);
@@ -100,12 +112,15 @@ public class CloudNotesBackEnd
 				
 	    try 
 	    {
-	    	Scanner sc = new Scanner (notepadFile);
-		    while (sc.hasNextLine())
-		    	input += sc.nextLine() + "\n";
-		    sc.close();
-			
-		    previousInput = input;
+	    	if (notepadFile.exists())
+	    	{
+		    	Scanner sc = new Scanner (notepadFile);
+			    while (sc.hasNextLine())
+			    	input += sc.nextLine() + "\n";
+			    sc.close();
+				
+			    previousInput = input;
+	    	}
 	    }
 	    catch (Exception ex)
 	    {
